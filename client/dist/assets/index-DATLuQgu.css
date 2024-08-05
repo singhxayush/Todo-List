@@ -1,0 +1,1 @@
+@media (min-width: 768px){body{overflow:hidden}#main-container{overflow-y:scroll;height:100vh}::-webkit-scrollbar{display:none}*{scrollbar-width:none}body{-ms-overflow-style:none}}@media (max-width: 767px){body{overflow:auto}#main-container{overflow-y:auto;height:auto}::-webkit-scrollbar{display:block}*{scrollbar-width:auto}body{-ms-overflow-style:auto}}
