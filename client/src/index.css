@@ -1,0 +1,55 @@
+/* Hide scrollbars on desktop browsers */
+@media (min-width: 768px) {
+  /* Adjust the min-width as needed for your breakpoint */
+  /* Hide scrollbars */
+  body {
+    overflow: hidden; /* Hide scrollbars */
+  }
+
+  /* Ensure the main content container scrolls */
+  #main-container {
+    overflow-y: scroll; /* Enable vertical scrolling */
+    height: 100vh; /* Set a height if needed */
+  }
+
+  /* Hide scrollbars in WebKit browsers (Chrome, Safari) */
+  ::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
+
+  /* Hide scrollbars in Firefox */
+  * {
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+  }
+
+  /* Hide scrollbars in Internet Explorer and Edge */
+  body {
+    -ms-overflow-style: none; /* Hide scrollbar in Internet Explorer and Edge */
+  }
+}
+
+/* Ensure scrollbars are visible on mobile screens */
+@media (max-width: 767px) {
+  body {
+    overflow: auto; /* Allow scrollbars to appear on mobile devices */
+  }
+
+  /* Ensure scrollbars are visible in mobile view */
+  #main-container {
+    overflow-y: auto; /* Allow vertical scrolling */
+    height: auto; /* Adjust height if needed */
+  }
+
+  /* Restore default scrollbar appearance on mobile */
+  ::-webkit-scrollbar {
+    display: block; /* Show scrollbar */
+  }
+
+  * {
+    scrollbar-width: auto; /* Show scrollbar in Firefox */
+  }
+
+  body {
+    -ms-overflow-style: auto; /* Show scrollbar in Internet Explorer and Edge */
+  }
+}
