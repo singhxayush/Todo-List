@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,7 +29,7 @@ func main() {
 	if os.Getenv("ENV") != "production" {
 		err := godotenv.Load(".env")
 		if err != nil {
-			log.Fatal("Error Loading .env file")
+			log.Fatal("Error Loading .env file", err)
 		}
 	}
 
@@ -54,12 +53,12 @@ func main() {
 
 	app := fiber.New()
 
-	if os.Getenv("ENV") == "development" {
-		app.Use(cors.New(cors.Config{
-			AllowOrigins: "http://localhost:5173",
-			AllowHeaders: "Origin,Content-Type,Accept",
-		}))
-	}
+	// if os.Getenv("ENV") == "development" {
+	// 	app.Use(cors.New(cors.Config{
+	// 		AllowOrigins: "http://localhost:5173",
+	// 		AllowHeaders: "Origin,Content-Type,Accept",
+	// 	}))
+	// }
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodos)
@@ -75,7 +74,8 @@ func main() {
 		app.Static("/", "./client/dist")
 	}
 
-	fmt.Println("Listening on PORT ::", port)
+	// fmt.Println("Listening on PORT ::", port)
+	
 	log.Fatal(app.Listen("0.0.0.0:" + port))
 }
 
