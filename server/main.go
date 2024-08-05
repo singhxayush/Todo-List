@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,17 +17,21 @@ import (
 )
 
 type Todo struct {
-	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Completed bool               `json:"completed"`
 	Body      string             `json:"body"`
+	CreatedAt time.Time          `json:"created_at,omitempty" bson:"created_at,omitempty"`
+	UpdatedAt time.Time          `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
 
 var collection *mongo.Collection // a pointer to the mongo collection
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error Loading .env file")
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error Loading .env file")
+		}
 	}
 
 	MONGODB_URI := os.Getenv("MONGODB_URI")
@@ -48,6 +54,13 @@ func main() {
 
 	app := fiber.New()
 
+	if os.Getenv("ENV") == "development" {
+		app.Use(cors.New(cors.Config{
+			AllowOrigins: "http://localhost:5173",
+			AllowHeaders: "Origin,Content-Type,Accept",
+		}))
+	}
+
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodos)
 	app.Patch("/api/todos/:id", updateTodos)
@@ -58,24 +71,36 @@ func main() {
 		port = "8080"
 	}
 
+	if os.Getenv("ENV") == "production" {
+		app.Static("../", "./client/dist")
+	}
+
 	fmt.Println("Listening on PORT ::", port)
 	log.Fatal(app.Listen("0.0.0.0:" + port))
 }
 
 func getTodos(c *fiber.Ctx) error {
-	var todos []Todo
-	cursor, err := collection.Find(context.Background(), bson.M{})
+	// Define the sort option to sort by CreatedAt in descending order
+	sortOption := bson.M{"created_at": -1}
+
+	// Query with sorting option
+	cursor, err := collection.Find(context.Background(), bson.M{}, options.Find().SetSort(sortOption))
 	if err != nil {
 		return err
 	}
 	defer cursor.Close(context.Background())
 
+	var todos []Todo
 	for cursor.Next(context.Background()) {
 		var todo Todo
 		if err := cursor.Decode(&todo); err != nil {
 			return err
 		}
 		todos = append(todos, todo)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return err
 	}
 
 	return c.JSON(todos)
@@ -91,6 +116,10 @@ func createTodos(c *fiber.Ctx) error {
 	if todo.Body == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "todo body is empty"})
 	}
+
+	now := time.Now()
+	todo.CreatedAt = now
+	todo.UpdatedAt = now
 
 	insertRes, err := collection.InsertOne(context.Background(), todo)
 	if err != nil {
@@ -110,7 +139,12 @@ func updateTodos(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{"_id": objectID}
-	update := bson.M{"$set": bson.M{"completed": true}}
+	update := bson.M{
+		"$set": bson.M{
+			"completed":  true,
+			"updated_at": time.Now(),
+		},
+	}
 
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
