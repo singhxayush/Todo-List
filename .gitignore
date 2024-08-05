@@ -30,4 +30,4 @@ vendor/
 
 # Dependency directories (remove the comment below if you are using dep)
 
-client/
+# client
