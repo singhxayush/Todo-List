@@ -1,6 +1,7 @@
-import { Flex, Spinner, Stack, Text, Divider } from "@chakra-ui/react";
+import { Flex, Stack, Text, Divider } from "@chakra-ui/react";
 import TodoItem from "./Todoitem";
 import { useTodos } from "./useTodos";
+import { Skeleton } from '@chakra-ui/react'
 
 const TodoList = () => {
   // Use the custom hook to fetch todos
@@ -62,9 +63,17 @@ const TodoList = () => {
         </Text>
       )}
 
+
       {isLoading && (
         <Flex justifyContent={"center"} my={4}>
-          <Spinner size={"xl"} />
+          <Skeleton height='20px' />
+          <Skeleton height='20px' />
+          <Skeleton height='20px' />
+          <Skeleton height='20px' />
+          <Skeleton height='20px' />
+          <Skeleton height='20px' />
+          {/* <Skeleton startColor='pink.500' endColor='orange.500' height='20px' /> */}
+          {/* <Spinner size={"xl"} /> */}
         </Flex>
       )}
 
@@ -73,6 +82,9 @@ const TodoList = () => {
           <Text fontSize={"xl"} textAlign={"center"} color={"gray.600"}>
             Add a task
           </Text>
+          {/* <Skeleton height='20px' /> */}
+          {/* <Skeleton startColor='pink.500' endColor='orange.500' height='20px' /> */}
+          {/* <Spinner size={"xl"} /> */}
           <img src="/todo1.png" alt="todo logo" width={400} style={{ margin: "20px" }} />
         </Stack>
       )}
