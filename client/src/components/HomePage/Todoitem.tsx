@@ -4,15 +4,19 @@ import {
   Flex,
   Spinner,
   Text,
+  useBreakpointValue,
   useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { RiDeleteBack2Fill } from "react-icons/ri";
-import { Todo } from "./useTodos";
+import { Todo } from "../useTodos";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BASE_URL } from "../App";
+import { BASE_URL } from "../../App";
+import { IoArrowUndoCircle } from "react-icons/io5";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const textColor = useColorModeValue("gray.700", "gray.200");
   const queryClient = useQueryClient();
   const { mutate: updateTodo, isPending: isUpdating } = useMutation({
@@ -66,32 +70,50 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
     <Flex gap={2} alignItems={"center"}>
       <Flex
         flex={1}
-        alignItems={"center"}
+        flexDirection={"column"}
+        alignItems={"start"}
         border={"1px"}
         borderColor={"gray.600"}
         p={2}
         borderRadius={"lg"}
         justifyContent={"space-between"}
+        cursor={isMobile ? "pointer" : undefined}
+        onClick={isMobile ? () => updateTodo() : undefined}
       >
         <Text
+          ml="1"
+          mb="1"
+          fontSize="sm"
+          fontWeight="bold"
+          color={textColor}
+          textDecoration={todo.completed ? "line-through" : "none"}
+        >
+          {todo.heading}
+        </Text>
+
+        <VStack>
+          {todo.completed ? (
+            <Badge ml="1" colorScheme="green">
+              Done
+            </Badge>
+          ) : (
+            <Badge ml="1" colorScheme="yellow">
+              Pending
+            </Badge>
+          )}
+        </VStack>
+
+        <Text
+          ml="1"
+          fontSize="sm"
           color={textColor}
           textDecoration={todo.completed ? "line-through" : "none"}
         >
           {todo.body}
         </Text>
-        {todo.completed && (
-          <Badge ml="1" colorScheme="green">
-            Done
-          </Badge>
-        )}
-        {!todo.completed && (
-          <Badge ml="1" colorScheme="yellow">
-            In Progress
-          </Badge>
-        )}
       </Flex>
       <Flex gap={2} alignItems={"center"}>
-        {!todo.completed && (
+        {!isMobile && !todo.completed && (
           <Box
             color={"green.300"}
             cursor={"pointer"}
@@ -101,10 +123,25 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             {isUpdating && <Spinner size={"sm"} />}
           </Box>
         )}
-        <Box color={"red.400"} cursor={"pointer"} onClick={() => deleteTodo()}>
-          {!isDeleting && <RiDeleteBack2Fill size={24} />}
-          {isDeleting && <Spinner size={"sm"} />}
-        </Box>
+        <VStack>
+          <Box
+            color={"red.400"}
+            cursor={"pointer"}
+            onClick={() => deleteTodo()}
+          >
+            {!isDeleting && <RiDeleteBack2Fill size={24} />}
+            {isDeleting && <Spinner size={"sm"} />}
+          </Box>
+
+          <Box
+            color={"blue.400"}
+            cursor={"pointer"}
+            onClick={() => updateTodo()}
+          >
+            {todo.completed && !isUpdating && <IoArrowUndoCircle size={28} />}
+            {todo.completed && isUpdating && <Spinner size={"sm"} />}
+          </Box>
+        </VStack>
       </Flex>
     </Flex>
   );

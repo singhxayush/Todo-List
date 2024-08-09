@@ -11,14 +11,17 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useEffect, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { BASE_URL } from "../App";
+import { BASE_URL } from "../../App";
 import { PiCommandFill } from "react-icons/pi";
 import { TbSquareLetterKFilled } from "react-icons/tb";
 
 const TodoForm = () => {
-  const [newTodo, setNewTodo] = useState("");
+  const [newTodoHeader, setNewTodoHeader] = useState("");
+  const [newTodoBody, setNewTodoBody] = useState("");
   const queryClient = useQueryClient();
-  const toast = useToast();
+  const toast = useToast({
+    position: 'top',
+  })
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -40,7 +43,7 @@ const TodoForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ body: newTodo }),
+          body: JSON.stringify({ heading: newTodoHeader, body: newTodoBody }),
         });
         const data = await res.json();
 
@@ -48,7 +51,8 @@ const TodoForm = () => {
           throw new Error(data.error || "Something went wrong");
         }
 
-        setNewTodo("");
+        setNewTodoHeader("");
+        setNewTodoBody("");
         return data;
       } catch (error: any) {
         throw new Error(error.message || "Error occurred");
@@ -63,7 +67,7 @@ const TodoForm = () => {
         description: "Todo Item Successfully Added.",
         status: "success",
         duration: 3000,
-        variant: "top-accent",
+        variant: "solid",
         isClosable: true,
       });
     },
@@ -74,7 +78,7 @@ const TodoForm = () => {
         description: error.message || "Can't Add Empty Todo",
         status: "error",
         duration: 3000,
-        variant: "top-accent",
+        variant: "solid",
         isClosable: true,
       });
     },
@@ -101,8 +105,8 @@ const TodoForm = () => {
           <Input
             ref={inputRef}
             type="text"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
+            value={newTodoHeader}
+            onChange={(e) => setNewTodoHeader(e.target.value)}
             placeholder="Type your todo"
             onFocus={handleFocus}
             onBlur={handleBlur}

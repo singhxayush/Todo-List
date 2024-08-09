@@ -19,7 +19,7 @@ const DesktopNavbar = ({ children }: DesktopNavbarProps) => {
   return (
     <Container
       position="fixed"
-      top={0}
+      bottom={0}
       left="50%"
       transform="translateX(-50%)"
       zIndex={1000}

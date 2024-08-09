@@ -6,7 +6,7 @@ import {
 import TodoProgressBar from "./TodoProgress";
 
 
-const Dashboard = () => {
+export const Dashboard = () => {
   return (
     <Box p={6}>
       <Flex direction="column" align="center" justify="center" h="fit-content">
@@ -17,5 +17,3 @@ const Dashboard = () => {
     </Box>
   );
 };
-
-export default Dashboard;
