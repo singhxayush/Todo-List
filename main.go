@@ -30,18 +30,18 @@ var collection *mongo.Collection // a pointer to the mongo collection
 func main() {
 
 	// For Deloyment
-	// if os.Getenv("ENV") != "production" {
-	// 	err := godotenv.Load(".env")
-	// 	if err != nil {
-	// 		log.Fatal("Error Loading .env file", err)
-	// 	}
-	// }
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error Loading .env file", err)
+		}
+	}
 
 	// Running Locally
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error Loading .env file", err)
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatal("Error Loading .env file", err)
+	// }
 
 	MONGODB_URI := os.Getenv("MONGODB_URI")
 
@@ -79,9 +79,9 @@ func main() {
 	}
 
 	// For Deployment
-	// if os.Getenv("ENV") == "production" {
-	// 	app.Static("/", "./client/dist")
-	// }
+	if os.Getenv("ENV") == "production" {
+		app.Static("/", "./client/dist")
+	}
 
 	fmt.Println("Listening on PORT ::", port)
 
