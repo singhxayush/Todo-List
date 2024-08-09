@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,7 +28,7 @@ var collection *mongo.Collection // a pointer to the mongo collection
 
 func main() {
 
-	// For Deloyment
+	//: Deployment 
 	if os.Getenv("ENV") != "production" {
 		err := godotenv.Load(".env")
 		if err != nil {
@@ -37,7 +36,7 @@ func main() {
 		}
 	}
 
-	// Running Locally
+	//: Development 
 	// err := godotenv.Load(".env")
 	// if err != nil {
 	// 	log.Fatal("Error Loading .env file", err)
@@ -63,10 +62,11 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173",
-		AllowHeaders: "Origin,Content-Type,Accept",
-	}))
+	//: Development 
+	// app.Use(cors.New(cors.Config{
+	// 	AllowOrigins: "http://localhost:5173",
+	// 	AllowHeaders: "Origin,Content-Type,Accept",
+	// }))
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodos)
@@ -78,7 +78,7 @@ func main() {
 		port = "8080"
 	}
 
-	// For Deployment
+	//: Deployment 
 	if os.Getenv("ENV") == "production" {
 		app.Static("/", "./client/dist")
 	}
@@ -141,41 +141,40 @@ func createTodos(c *fiber.Ctx) error {
 }
 
 func updateTodos(c *fiber.Ctx) error {
-    id := c.Params("id")
-    objectID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return c.Status(400).JSON(fiber.Map{"error": "invalid todo id"})
-    }
+	id := c.Params("id")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid todo id"})
+	}
 
-    filter := bson.M{"_id": objectID}
+	filter := bson.M{"_id": objectID}
 
-    // Fetch the current todo to determine the current state of `completed`
-    var todo struct {
-        Completed bool `bson:"completed"`
-    }
-    err = collection.FindOne(context.Background(), filter).Decode(&todo)
-    if err != nil {
-        return c.Status(404).JSON(fiber.Map{"error": "todo not found"})
-    }
+	// Fetch the current todo to determine the current state of `completed`
+	var todo struct {
+		Completed bool `bson:"completed"`
+	}
+	err = collection.FindOne(context.Background(), filter).Decode(&todo)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": "todo not found"})
+	}
 
-    // Toggle the `completed` field
-    newCompletedState := !todo.Completed
+	// Toggle the `completed` field
+	newCompletedState := !todo.Completed
 
-    update := bson.M{
-        "$set": bson.M{
-            "completed":  newCompletedState,
-            "updated_at": time.Now(),
-        },
-    }
+	update := bson.M{
+		"$set": bson.M{
+			"completed":  newCompletedState,
+			"updated_at": time.Now(),
+		},
+	}
 
-    _, err = collection.UpdateOne(context.Background(), filter, update)
-    if err != nil {
-        return err
-    }
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
 
-    return c.Status(200).JSON(fiber.Map{"success": true})
+	return c.Status(200).JSON(fiber.Map{"success": true})
 }
-
 
 func deleteTodos(c *fiber.Ctx) error {
 	id := c.Params("id")
