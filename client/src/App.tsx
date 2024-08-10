@@ -2,8 +2,8 @@ import { Stack, useBreakpointValue } from "@chakra-ui/react";
 import Navbar from "./components/NavBar/Navbar";
 import { HomepageMobile } from "./components/HomePage/HomepageMobile";
 
-// export const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8080/api" : "/api";
-export const BASE_URL = "http://localhost:8080/api"
+export const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8080/api" : "/api";
+// export const BASE_URL = "http://localhost:8080/api"
 
 const App = () => {
   // Directly use string literals as the value
