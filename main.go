@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,7 +29,7 @@ var collection *mongo.Collection // a pointer to the mongo collection
 
 func main() {
 
-	//: Deployment 
+	//: Deployment
 	if os.Getenv("ENV") != "production" {
 		err := godotenv.Load(".env")
 		if err != nil {
@@ -36,7 +37,7 @@ func main() {
 		}
 	}
 
-	//: Development 
+	//: Development
 	// err := godotenv.Load(".env")
 	// if err != nil {
 	// 	log.Fatal("Error Loading .env file", err)
@@ -62,7 +63,7 @@ func main() {
 
 	app := fiber.New()
 
-	//: Development 
+	//: Development
 	// app.Use(cors.New(cors.Config{
 	// 	AllowOrigins: "http://localhost:5173",
 	// 	AllowHeaders: "Origin,Content-Type,Accept",
@@ -78,7 +79,7 @@ func main() {
 		port = "8080"
 	}
 
-	//: Deployment 
+	//: Deployment
 	if os.Getenv("ENV") == "production" {
 		app.Static("/", "./client/dist")
 	}
